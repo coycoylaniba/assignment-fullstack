@@ -1,52 +1,23 @@
 import type { Priority, Task } from "@/api/tasks";
 import { deleteTask } from "@/api/tasks";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 interface TaskListProps {
   tasks: Task[];
-  searchTerm: string;
   onTaskUpdated: (taskId: number, updates: Partial<Task>) => void;
   onTaskDeleted: (taskId: number) => void;
+  setSortBy: (filter: "due_date" | "priority" | "title") => void;
+  sortBy: "due_date" | "priority" | "title";
 }
 
 function TaskList({
   tasks,
-  searchTerm,
   onTaskUpdated,
   onTaskDeleted,
+  sortBy,
+  setSortBy,
 }: TaskListProps) {
-  const [sortBy, setSortBy] = useState<"date" | "priority" | "title">("date");
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-
-  const filteredAndSortedTasks: Task[] = useMemo(
-    () =>
-      tasks
-        .filter(
-          (task) =>
-            task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (task.description &&
-              task.description.toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-        .sort((a, b) => {
-          console.log("🔥 Expensive sort operation running!"); // This will log too frequently
-          if (sortBy === "date") {
-            return (
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-            );
-          }
-          if (sortBy === "priority") {
-            const order: Record<Priority, number> = {
-              high: 3,
-              medium: 2,
-              low: 1,
-            };
-            return order[b.priority] - order[a.priority];
-          }
-          return a.title.localeCompare(b.title);
-        }),
-    [tasks]
-  );
 
   const handleTaskClick = (taskId: number) => {
     setSelectedTaskId(taskId);
@@ -71,20 +42,20 @@ function TaskList({
         <select
           value={sortBy}
           onChange={(e) =>
-            setSortBy(e.target.value as "date" | "priority" | "title")
+            setSortBy(e.target.value as "due_date" | "priority" | "title")
           }
         >
-          <option value="date">Sort by Date</option>
+          <option value="due_date">Sort by Date</option>
           <option value="priority">Sort by Priority</option>
           <option value="title">Sort by Title</option>
         </select>
         <span style={{ marginLeft: "10px" }}>
-          Showing {filteredAndSortedTasks.length} of {tasks.length} tasks
+          Showing {tasks.length} of {tasks.length} tasks
         </span>
       </div>
 
       <div className="task-list">
-        {filteredAndSortedTasks.map((task) => (
+        {tasks.map((task) => (
           <TaskItem
             key={task.id}
             task={task}

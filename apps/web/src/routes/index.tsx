@@ -13,16 +13,30 @@ function HomeComponent() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<"due_date" | "priority" | "title">(
+    "due_date"
+  );
+  const [search, setSearch] = useState<string>("");
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [search, sortBy]);
+
+  useEffect(() => {
+    const to = setTimeout(() => {
+      setSearch(searchTerm);
+    }, 1000);
+
+    return () => {
+      clearTimeout(to);
+    };
+  }, [searchTerm]);
 
   const loadTasks = async (): Promise<void> => {
     setLoading(true);
     try {
-      const data = await fetchTasks();
-      setTasks(data);
+      const response = await fetchTasks({ search: searchTerm, sortBy });
+      setTasks(response.data);
     } catch (error) {
       console.error("Failed to load tasks:", error);
     } finally {
@@ -68,9 +82,10 @@ function HomeComponent() {
         <div className="right-panel">
           <TaskList
             tasks={tasks}
-            searchTerm={searchTerm}
             onTaskUpdated={handleTaskUpdated}
             onTaskDeleted={handleTaskDeleted}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
           />
         </div>
       </div>

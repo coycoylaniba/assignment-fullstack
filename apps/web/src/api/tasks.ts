@@ -25,11 +25,29 @@ export type NewTask = {
 export type TaskFilters = {
   priority?: Priority;
   category?: string;
+  search?: string;
+  page?: string;
+  limit?: string;
+  sortBy?: "title" | "priority" | "due_date";
+  sortOrder?: "asc" | "desc";
+  completed?: string;
+};
+
+export type PaginationMetadata = {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 };
 
 export const fetchTasks = async (
   filters: TaskFilters = {}
-): Promise<Task[]> => {
+): Promise<{
+  data: Task[];
+  pagination: PaginationMetadata;
+}> => {
   const queryParams = new URLSearchParams(filters).toString();
   const url = queryParams
     ? `${API_URL}/tasks?${queryParams}`
@@ -37,7 +55,10 @@ export const fetchTasks = async (
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch tasks");
-  return response.json() as Promise<Task[]>;
+  return response.json() as Promise<{
+    data: Task[];
+    pagination: PaginationMetadata;
+  }>;
 };
 
 export const createTask = async (task: NewTask): Promise<Task> => {
