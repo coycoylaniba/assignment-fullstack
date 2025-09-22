@@ -82,7 +82,7 @@ router.get("/tasks", async (c) => {
   const hasNextPage = tasksResult.length > itemsPerPage;
   const hasPreviousPage = currentPage > 1;
 
-  if (tasksResult.length > itemsPerPage + 1) {
+  if (tasksResult.length > itemsPerPage) {
     tasksResult.pop();
   }
 
