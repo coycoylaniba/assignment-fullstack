@@ -28,7 +28,7 @@ function HomeComponent() {
   const [tasksCount, setTasksCount] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  const { page = 1 } = useSearch({ strict: false });
+  const { page = 1 } = useSearch({ from: "/" });
 
   useEffect(() => {
     loadTasks();

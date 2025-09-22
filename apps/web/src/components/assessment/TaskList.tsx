@@ -1,6 +1,6 @@
 import type { Priority, Task } from "@/api/tasks";
 import { deleteTask } from "@/api/tasks";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
 interface TaskListProps {
@@ -27,6 +27,8 @@ function TaskList({
   totalPages,
 }: TaskListProps) {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+
+  const { page = 1 } = useSearch({ from: "/" });
 
   const handleTaskClick = (taskId: number) => {
     setSelectedTaskId(taskId);
@@ -68,7 +70,7 @@ function TaskList({
           <option value="desc">Descending</option>
         </select>
         <span style={{ marginLeft: "10px" }}>
-          Showing {tasks.length} of {tasksCount} tasks
+          Showing {tasks.length + (page - 1) * 10} of {tasksCount} tasks
         </span>
       </div>
 
