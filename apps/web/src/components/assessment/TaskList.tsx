@@ -1,5 +1,6 @@
 import type { Priority, Task } from "@/api/tasks";
 import { deleteTask } from "@/api/tasks";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 interface TaskListProps {
@@ -8,14 +9,22 @@ interface TaskListProps {
   onTaskDeleted: (taskId: number) => void;
   setSortBy: (filter: "due_date" | "priority" | "title") => void;
   sortBy: "due_date" | "priority" | "title";
+  setSortOrder: (filter: "asc" | "desc") => void;
+  sortOrder: "asc" | "desc";
+  tasksCount: number;
+  totalPages: number;
 }
 
 function TaskList({
   tasks,
+  tasksCount,
   onTaskUpdated,
   onTaskDeleted,
   sortBy,
   setSortBy,
+  sortOrder,
+  setSortOrder,
+  totalPages,
 }: TaskListProps) {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
@@ -36,6 +45,8 @@ function TaskList({
     }
   };
 
+  const pages = Array.from({ length: totalPages }).map((_v, i) => i + 1);
+
   return (
     <div>
       <div style={{ marginBottom: "10px" }}>
@@ -49,8 +60,15 @@ function TaskList({
           <option value="priority">Sort by Priority</option>
           <option value="title">Sort by Title</option>
         </select>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
         <span style={{ marginLeft: "10px" }}>
-          Showing {tasks.length} of {tasks.length} tasks
+          Showing {tasks.length} of {tasksCount} tasks
         </span>
       </div>
 
@@ -66,6 +84,16 @@ function TaskList({
           />
         ))}
       </div>
+
+      {pages.length > 1 ? (
+        <div className="pagination">
+          {pages.map((p) => (
+            <Link key={`page-${p}`} to={`/`} search={{ page: p }}>
+              {p}
+            </Link>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

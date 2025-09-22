@@ -2,10 +2,17 @@ import { fetchTasks, type Task } from "@/api/tasks";
 import TaskForm from "@/components/assessment/TaskForm";
 import TaskList from "@/components/assessment/TaskList";
 import TaskStats from "@/components/assessment/TaskStats";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+
+const searchParams = z.object({
+  page: z.number().optional(),
+  search: z.string().optional(),
+});
 
 export const Route = createFileRoute("/")({
+  validateSearch: searchParams,
   component: HomeComponent,
 });
 
@@ -16,11 +23,16 @@ function HomeComponent() {
   const [sortBy, setSortBy] = useState<"due_date" | "priority" | "title">(
     "due_date"
   );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState<string>("");
+  const [tasksCount, setTasksCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  const { page = 1 } = useSearch({ strict: false });
 
   useEffect(() => {
     loadTasks();
-  }, [search, sortBy]);
+  }, [search, sortBy, sortOrder]);
 
   useEffect(() => {
     const to = setTimeout(() => {
@@ -35,8 +47,15 @@ function HomeComponent() {
   const loadTasks = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetchTasks({ search: searchTerm, sortBy });
+      const response = await fetchTasks({
+        page: page.toString(),
+        search: searchTerm,
+        sortBy,
+        sortOrder,
+      });
       setTasks(response.data);
+      setTasksCount(response.pagination.totalItems);
+      setTotalPages(response.pagination.totalPages);
     } catch (error) {
       console.error("Failed to load tasks:", error);
     } finally {
@@ -86,6 +105,10 @@ function HomeComponent() {
             onTaskDeleted={handleTaskDeleted}
             sortBy={sortBy}
             setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            tasksCount={tasksCount}
+            totalPages={totalPages}
           />
         </div>
       </div>

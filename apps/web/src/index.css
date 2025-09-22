@@ -133,12 +133,12 @@ body {
   }
 }
 
-
 .app {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, sans-serif;
 }
 
 .search-bar {
@@ -180,7 +180,7 @@ body {
 }
 
 .task-item:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .task-item.selected {
@@ -201,9 +201,18 @@ body {
   font-weight: bold;
 }
 
-.priority.high { background: #ffcccc; color: #cc0000; }
-.priority.medium { background: #fff3cd; color: #856404; }
-.priority.low { background: #d4edda; color: #155724; }
+.priority.high {
+  background: #ffcccc;
+  color: #cc0000;
+}
+.priority.medium {
+  background: #fff3cd;
+  color: #856404;
+}
+.priority.low {
+  background: #d4edda;
+  color: #155724;
+}
 
 .stats-container {
   background: var(--color-muted);
@@ -227,7 +236,9 @@ body {
   color: var(--color-card-foreground);
 }
 
-.task-form input, .task-form textarea, .task-form select {
+.task-form input,
+.task-form textarea,
+.task-form select {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -266,4 +277,10 @@ body {
 .virtual-list-item {
   position: absolute;
   width: 100%;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
